@@ -3,6 +3,7 @@ var path = require('path');
 var fs = require('fs');
 var app = express();
 var bodyparser= require('body-parser');
+const { render } = require('ejs');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -121,6 +122,58 @@ app.post('/',function(req,res){
     res.render('alertLoginUsername');
   }
 });
+
+app.post('/sun',function(req,res){
+  var x='The Sun and Her Flowers';
+  if(!fs.existsSync("wantToRead.json"))
+  {
+  var wantToRead =new Array();
+  var y= JSON.stringify(wantToRead);
+  fs.writeFileSync("wantToRead.json",y);
+  }
+  var i= fs.readFileSync("wantToRead.json");
+  var data = JSON.parse(i);
+  var flag= false;
+  for(var i=0;i<data.length;i++){
+      if(data[i] == x){
+        flag=true;
+        //res.render('alertRegistration');
+        break;
+    }
+  } 
+  if(flag==false){
+    data.push(x);
+    var y=JSON.stringify(data);
+    fs.writeFileSync("wantToRead.json",y);``
+}});
+
+var books= [{name: 'The Sun and Her Flowers', ref:'/sun'},
+{name: 'To Kill a Mockingbird', ref:'/mockingbird'},
+{name: 'Dune', ref:'/dune'},
+{name: 'Lord of the Flies', ref:'/flies'},
+{name: 'The Grapes of Wrath', ref:'/grapes'},
+{name: 'Leaves of Grass', ref:'/leaves'}];
+
+
+app.post('/search',function(req,res){
+var keyword = req.body.Search;
+var results=[];
+var flag=false;
+for(var i=0;i<books.length;i++){
+  if(books[i].name.toLowerCase().includes(keyword.toLowerCase())){
+    results.push(books[i]);
+    flag=true;
+    
+  }
+}
+if(flag == false){
+  res.render('booknotfound');
+}
+else{
+res.render('searchresults',{results: results});
+}
+});
+
 
 if(process.env.port){
   app.listen(process.env.port,function(){console.log('server started')});

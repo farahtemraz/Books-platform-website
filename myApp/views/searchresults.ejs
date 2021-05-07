@@ -38,5 +38,11 @@
             </form>
         </div>
     </nav>
+
+    <% results.forEach(function(result){ %>
+        
+        <a href= <%= result.ref %> ><strong><%= result.name%></strong></a> </br>
+        <% }) %>
+        
 </body>
 </html>
